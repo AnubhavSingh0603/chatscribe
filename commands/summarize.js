@@ -4,14 +4,14 @@ import { privateSummaryEmbed, errorEmbed } from '../utils/embeds.js';
 import { config } from '../config.js';
 import { logger } from '../utils/logger.js';
 
-export const summarize = {
+export const summarise = {
   data: new SlashCommandBuilder()
-    .setName('summarize')
-    .setDescription('Privately summarize the last N messages of this channel.')
+    .setName('summarise')
+    .setDescription('Privately summarise the last N messages of this channel.')
     .addIntegerOption((opt) =>
       opt
         .setName('count')
-        .setDescription(`Number of messages to summarize (1-${config.limits.manualSummaryMaxN})`)
+        .setDescription(`Number of messages to summarise (1-${config.limits.manualSummaryMaxN})`)
         .setRequired(true)
         .setMinValue(1)
         .setMaxValue(config.limits.manualSummaryMaxN)
@@ -49,7 +49,7 @@ export const summarize = {
           embeds: [
             errorEmbed(
               'Not enough messages',
-              'I need at least 2 non-bot messages with text content to summarize.'
+              'I need at least 2 non-bot messages with text content to summarise.'
             ),
           ],
         });
@@ -63,7 +63,7 @@ export const summarize = {
       });
       await interaction.editReply({ embeds: [embed] });
     } catch (err) {
-      logger.error('summarize failed:', err);
+      logger.error('summarise failed:', err);
       await interaction.editReply({
         embeds: [
           errorEmbed(

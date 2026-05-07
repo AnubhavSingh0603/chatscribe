@@ -31,18 +31,15 @@ const MOD_PERMS = [
   PermissionFlagsBits.ModerateMembers,
 ];
 
-function adminGuard(commandData) {
-  return commandData
-    .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild | PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageMessages | PermissionFlagsBits.ModerateMembers)
-    .setDMPermission(false);
-}
+const MOD_COMMAND_VISIBILITY_PERMISSION = PermissionFlagsBits.ManageMessages;
 
-// These commands are intentionally visible in the slash-command menu, but
-// runtime-locked by safeRun(). Discord's default_member_permissions cannot
-// express "any one of these mod permissions" reliably for every server setup,
-// so this keeps them discoverable for all moderator roles while denying members.
-function visibleButModOnly(commandData) {
-  return commandData.setDMPermission(false);
+function adminGuard(commandData) {
+  // Discord command visibility cannot express "any of these mod permissions" reliably.
+  // Use Manage Messages as the default visibility gate so normal members do not see
+  // staff commands. The runtime guard below still accepts the broader mod permission set.
+  return commandData
+    .setDefaultMemberPermissions(MOD_COMMAND_VISIBILITY_PERMISSION)
+    .setDMPermission(false);
 }
 
 function hasModPermission(interaction) {
@@ -95,7 +92,7 @@ export const setupCmd = {
               '**6. Test the style** with `/test_summary`.',
               '**7. Check config anytime** with `/config` or health with `/status`.',
               '',
-              'Member tools: `/summarize count:<1-100>` plus reply-prefix helpers `!factcheck`, `!fc`, `!check`, and `!explain`. Commands like `/config`, `/status`, and `/alert_panel` may appear in the picker, but they are runtime-locked to moderators.',
+              'Members can use `!factcheck`, `!fc`, `!check`, or `!explain` by replying to a message, and `/summarise count:<1-100>` for private summaries. Staff-only commands are hidden from regular members by Discord permission defaults and also checked at runtime.',
             ].join('\n')
           ),
         ],
@@ -107,10 +104,10 @@ export const setupCmd = {
 
 // ---- /config ----
 export const configCmd = {
-  data: visibleButModOnly(
+  data: adminGuard(
     new SlashCommandBuilder()
       .setName('config')
-      .setDescription('Mods only: show the current server configuration for summaries and alerts.')
+      .setDescription('Show the current server configuration for summaries and alerts.')
   ),
   async execute(interaction) {
     await safeRun(interaction, async () => {
@@ -125,10 +122,10 @@ export const configCmd = {
 
 // ---- /status ----
 export const statusCmd = {
-  data: visibleButModOnly(
+  data: adminGuard(
     new SlashCommandBuilder()
       .setName('status')
-      .setDescription('Mods only: show bot health, DB status, and current message counters.')
+      .setDescription('Show bot health, DB status, and current message counters.')
   ),
   async execute(interaction) {
     await safeRun(interaction, async () => {

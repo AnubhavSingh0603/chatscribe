@@ -1,5 +1,5 @@
 import { Collection } from 'discord.js';
-import { summarize } from './summarize.js';
+import { summarise } from './summarize.js';
 import { alertPanelCmd } from './alertPanel.js';
 import {
   setupCmd,
@@ -14,7 +14,7 @@ import {
 } from './admin.js';
 
 export const ALL_COMMANDS = [
-  summarize,
+  summarise,
   setupCmd,
   configCmd,
   statusCmd,

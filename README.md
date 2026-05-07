@@ -4,9 +4,9 @@ A production-ready Discord bot built with **Node.js**, **discord.js v14**, and *
 
 Features:
 
-- ✅ **AI-check / explain** any message — reply with `!factcheck`, `!fc`, `!check`, or `!explain`.
+- ✅ **AI reply helper** — members reply with `!factcheck`, `!fc`, `!check`, or `!explain` to fact-check claims, answer questions, identify requests, or explain a message.
 - 🧠 **Auto-summarization** every 300 messages on enabled channels.
-- 🔒 **Manual private summary** (`/summarize count`) — ephemeral, ≤ 100 messages.
+- 🔒 **Manual private summary** (`/summarise count`) — ephemeral, ≤ 100 messages.
 - ⚠️ **AI trigger detection** for *sexual violence, racism, politics, religion* routed only to the configured mod-only alert channel.
 - 🛡️ **Admin controls** (Administrator, Manage Server, Manage Channels, or Manage Messages required) for enabling channels and routing summary/alert outputs.
 - 💾 **Minimal DB usage** — last 1000 messages or 24h per channel, hourly cleanup, summaries persist.
@@ -134,9 +134,9 @@ The client uses `response_format: { type: "json_object" }` and tolerates fenced 
 | Command                              | Who      | Behaviour                                                      |
 | ------------------------------------ | -------- | -------------------------------------------------------------- |
 | Reply with `!factcheck`              | anyone   | Fact-checks the replied-to message (10s cooldown per user)      |
-| `/summarize count:<1-100>`           | anyone   | Private (ephemeral) summary of last *N* messages               |
+| `/summarise count:<1-100>`           | members | Private (ephemeral) summary of last *N* messages               |
 | `/setup`                           | Mods     | Shows guided setup checklist                                    |
-| `/config`                          | Mods     | Visible in the picker, but runtime-locked to mods; shows current enabled/routing configuration |
+| `/config`                          | Mods     | Shows current enabled/routing configuration                    |
 | `/status`                          | Mods     | Shows DB health and counters                                    |
 | `/test_summary`                    | Mods     | Previews summary style privately                                |
 | `/enable_channel [channel]`          | Mods     | Turn on auto-summary for a channel                             |
@@ -189,7 +189,8 @@ discord-summarizer-bot/
 │   └── tasks.js              # factcheck / summarize / trigger detection
 ├── commands/
 │   ├── index.js              # registry
-│   ├── summarize.js          # /summarize
+│   ├── summarize.js          # /summarise
+│   ├── alertPanel.js         # /alert_panel interactive staff UI
 │   └── admin.js              # /enable_channel, /disable_channel, /set_*
 ├── db/
 │   ├── pool.js               # pg pool
@@ -356,9 +357,9 @@ So if a member replies to a question with `!factcheck`, ChatScribe answers it. I
 
 | Command / UI | Who | Purpose |
 | --- | --- | --- |
-| `/alert_panel` | Mods | Visible in the picker, but runtime-locked to mods; interactive alert category/subcategory/sub-subcategory config |
+| `/alert_panel` | Mods | Interactive alert category/subcategory/sub-subcategory config |
 | `/setup` | Mods | Guided setup checklist |
-| `/config` | Mods | Visible in the picker, runtime-locked to mods; shows channels, alert role, and alert-panel reminder |
+| `/config` | Mods | Shows channels, alert role, and alert-panel reminder |
 | `/status` | Mods | Shows bot/DB/AI/storage health |
 | `/set_summary_channel` | Mods | Sets public auto-summary channel |
 | `/set_alert_channel` | Mods | Sets mod-only alert channel |
@@ -366,5 +367,24 @@ So if a member replies to a question with `!factcheck`, ChatScribe answers it. I
 | `/enable_channel` | Mods | Enables monitored channel |
 | `/disable_channel` | Mods | Disables monitored channel |
 | `/test_summary` | Mods | Private summary preview |
-| `/summarize count:1-100` | Members | Private user-friendly summary, no trigger warnings |
+| `/summarise count:1-100` | Members | Private user-friendly summary, no trigger warnings |
 | `!factcheck`, `!fc`, `!check`, `!explain` | Members | Reply-based fact-check, answer, ID help, opinion/joke/explanation helper |
+
+### Command visibility and permissions
+
+Regular members only see/use the public member command `/summarise` plus prefix helpers `!factcheck`, `!fc`, `!check`, and `!explain`. Staff tools are registered with Discord default member permissions so they are hidden from regular members and are also protected by runtime permission checks.
+
+Staff-only commands:
+
+- `/setup`
+- `/config`
+- `/status`
+- `/alert_panel`
+- `/test_summary`
+- `/enable_channel`
+- `/disable_channel`
+- `/set_summary_channel`
+- `/set_alert_channel`
+- `/set_alert_role`
+
+By default, Discord shows these staff commands to members with **Manage Messages** permission. The bot runtime also accepts Administrator, Manage Server, Manage Channels, Manage Messages, Kick Members, Ban Members, and Moderate Members. If a moderator role cannot see the commands, grant that role Manage Messages or explicitly allow the role under **Server Settings → Integrations → ChatScribe**.

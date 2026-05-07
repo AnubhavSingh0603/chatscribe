@@ -40,18 +40,22 @@ function hasModPermission(interaction) {
   return MOD_PERMS.some((p) => interaction.memberPermissions?.has(p));
 }
 
+const MOD_COMMAND_VISIBILITY_PERMISSION = PermissionFlagsBits.ManageMessages;
+
 function guardData(data) {
-  // Visible in the command menu, but execute() and component handlers are
-  // runtime-locked to moderators. This avoids hiding the panel from mods whose
-  // role uses a different moderation permission set.
-  return data.setDMPermission(false);
+  // Hide the panel from regular members at Discord's command-discovery layer.
+  // Runtime interactions still allow the broader MOD_PERMS set if command access is
+  // granted to a mod role through Server Settings -> Integrations.
+  return data
+    .setDefaultMemberPermissions(MOD_COMMAND_VISIBILITY_PERMISSION)
+    .setDMPermission(false);
 }
 
 export const alertPanelCmd = {
   data: guardData(
     new SlashCommandBuilder()
       .setName('alert_panel')
-      .setDescription('Mods only: open the interactive alert category configuration panel.')
+      .setDescription('Open an interactive UI to configure alert categories and subcategories.')
   ),
   async execute(interaction) {
     if (!hasModPermission(interaction)) {
