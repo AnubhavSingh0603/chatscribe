@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.log
+.DS_Store
+npm-debug.log*
+.pm2/
+
+# Disposable local test output
+local_system_disposable_tests/local_test_db.json
