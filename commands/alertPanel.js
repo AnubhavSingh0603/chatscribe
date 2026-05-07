@@ -41,21 +41,17 @@ function hasModPermission(interaction) {
 }
 
 function guardData(data) {
-  return data
-    .setDefaultMemberPermissions(
-      PermissionFlagsBits.ManageGuild |
-      PermissionFlagsBits.ManageChannels |
-      PermissionFlagsBits.ManageMessages |
-      PermissionFlagsBits.ModerateMembers
-    )
-    .setDMPermission(false);
+  // Visible in the command menu, but execute() and component handlers are
+  // runtime-locked to moderators. This avoids hiding the panel from mods whose
+  // role uses a different moderation permission set.
+  return data.setDMPermission(false);
 }
 
 export const alertPanelCmd = {
   data: guardData(
     new SlashCommandBuilder()
       .setName('alert_panel')
-      .setDescription('Open an interactive UI to configure alert categories and subcategories.')
+      .setDescription('Mods only: open the interactive alert category configuration panel.')
   ),
   async execute(interaction) {
     if (!hasModPermission(interaction)) {

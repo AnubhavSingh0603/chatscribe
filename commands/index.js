@@ -1,5 +1,4 @@
 import { Collection } from 'discord.js';
-import { factcheckContext } from './factcheck.js';
 import { summarize } from './summarize.js';
 import { alertPanelCmd } from './alertPanel.js';
 import {
@@ -15,7 +14,6 @@ import {
 } from './admin.js';
 
 export const ALL_COMMANDS = [
-  factcheckContext,
   summarize,
   setupCmd,
   configCmd,

@@ -37,6 +37,14 @@ function adminGuard(commandData) {
     .setDMPermission(false);
 }
 
+// These commands are intentionally visible in the slash-command menu, but
+// runtime-locked by safeRun(). Discord's default_member_permissions cannot
+// express "any one of these mod permissions" reliably for every server setup,
+// so this keeps them discoverable for all moderator roles while denying members.
+function visibleButModOnly(commandData) {
+  return commandData.setDMPermission(false);
+}
+
 function hasModPermission(interaction) {
   return MOD_PERMS.some((p) => interaction.memberPermissions?.has(p));
 }
@@ -87,7 +95,7 @@ export const setupCmd = {
               '**6. Test the style** with `/test_summary`.',
               '**7. Check config anytime** with `/config` or health with `/status`.',
               '',
-              'Members can use `!factcheck`, `!fc`, `!check`, or `!explain` by replying to a message, and `/summarize count:<1-100>` for private summaries.',
+              'Member tools: `/summarize count:<1-100>` plus reply-prefix helpers `!factcheck`, `!fc`, `!check`, and `!explain`. Commands like `/config`, `/status`, and `/alert_panel` may appear in the picker, but they are runtime-locked to moderators.',
             ].join('\n')
           ),
         ],
@@ -99,10 +107,10 @@ export const setupCmd = {
 
 // ---- /config ----
 export const configCmd = {
-  data: adminGuard(
+  data: visibleButModOnly(
     new SlashCommandBuilder()
       .setName('config')
-      .setDescription('Show the current server configuration for summaries and alerts.')
+      .setDescription('Mods only: show the current server configuration for summaries and alerts.')
   ),
   async execute(interaction) {
     await safeRun(interaction, async () => {
@@ -117,10 +125,10 @@ export const configCmd = {
 
 // ---- /status ----
 export const statusCmd = {
-  data: adminGuard(
+  data: visibleButModOnly(
     new SlashCommandBuilder()
       .setName('status')
-      .setDescription('Show bot health, DB status, and current message counters.')
+      .setDescription('Mods only: show bot health, DB status, and current message counters.')
   ),
   async execute(interaction) {
     await safeRun(interaction, async () => {

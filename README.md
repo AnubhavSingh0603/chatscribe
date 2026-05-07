@@ -4,7 +4,7 @@ A production-ready Discord bot built with **Node.js**, **discord.js v14**, and *
 
 Features:
 
-- ✅ **Fact-check** any message — reply with `!factcheck` or right-click → *Apps → Fact Check*.
+- ✅ **AI-check / explain** any message — reply with `!factcheck`, `!fc`, `!check`, or `!explain`.
 - 🧠 **Auto-summarization** every 300 messages on enabled channels.
 - 🔒 **Manual private summary** (`/summarize count`) — ephemeral, ≤ 100 messages.
 - ⚠️ **AI trigger detection** for *sexual violence, racism, politics, religion* routed only to the configured mod-only alert channel.
@@ -134,10 +134,9 @@ The client uses `response_format: { type: "json_object" }` and tolerates fenced 
 | Command                              | Who      | Behaviour                                                      |
 | ------------------------------------ | -------- | -------------------------------------------------------------- |
 | Reply with `!factcheck`              | anyone   | Fact-checks the replied-to message (10s cooldown per user)      |
-| Right-click message → **Fact Check** | anyone   | Same as above, no typing required                              |
 | `/summarize count:<1-100>`           | anyone   | Private (ephemeral) summary of last *N* messages               |
 | `/setup`                           | Mods     | Shows guided setup checklist                                    |
-| `/config`                          | Mods     | Shows current enabled/routing configuration                    |
+| `/config`                          | Mods     | Visible in the picker, but runtime-locked to mods; shows current enabled/routing configuration |
 | `/status`                          | Mods     | Shows DB health and counters                                    |
 | `/test_summary`                    | Mods     | Previews summary style privately                                |
 | `/enable_channel [channel]`          | Mods     | Turn on auto-summary for a channel                             |
@@ -190,7 +189,6 @@ discord-summarizer-bot/
 │   └── tasks.js              # factcheck / summarize / trigger detection
 ├── commands/
 │   ├── index.js              # registry
-│   ├── factcheck.js          # optional right-click context menu
 │   ├── summarize.js          # /summarize
 │   └── admin.js              # /enable_channel, /disable_channel, /set_*
 ├── db/
@@ -358,9 +356,9 @@ So if a member replies to a question with `!factcheck`, ChatScribe answers it. I
 
 | Command / UI | Who | Purpose |
 | --- | --- | --- |
-| `/alert_panel` | Mods | Interactive alert category/subcategory/sub-subcategory config |
+| `/alert_panel` | Mods | Visible in the picker, but runtime-locked to mods; interactive alert category/subcategory/sub-subcategory config |
 | `/setup` | Mods | Guided setup checklist |
-| `/config` | Mods | Shows channels, alert role, and alert-panel reminder |
+| `/config` | Mods | Visible in the picker, runtime-locked to mods; shows channels, alert role, and alert-panel reminder |
 | `/status` | Mods | Shows bot/DB/AI/storage health |
 | `/set_summary_channel` | Mods | Sets public auto-summary channel |
 | `/set_alert_channel` | Mods | Sets mod-only alert channel |
